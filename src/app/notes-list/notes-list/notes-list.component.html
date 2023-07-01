@@ -3,7 +3,7 @@
     <div class="search-bar-container">
         <div class="field">
             <p class="control has-icons-left has-icons-right">
-              <input style="background-color: rgb(244, 239, 239);" class="input" type="text" placeholder="Filter">
+              <input style="background-color: rgb(246, 243, 243);" class="input" type="text" placeholder="Filter">
               <span class="icon is-small is-left">
                 <img style="padding: 12px;" src="../../../assets/icons8-search.svg">
               </span>
@@ -12,8 +12,15 @@
     </div>
 
     <div class="notes-list">
-      <app-note-card [title]="'cardTitle'" [body]="'bodyText bodyText bodyText'"></app-note-card>
-      <app-note-card></app-note-card>
-      <app-note-card></app-note-card>
+      <!--<app-note-card [title]="'cardTitle'" [body]="'bodyText bodyText bodyText'"></app-note-card>-->
+      <app-note-card 
+        *ngFor="let note of notes; index as i"
+        [link]="i.toString()"
+        (delete)="deleteNote(i)"
+        [title]="note.title" 
+        [body]="note.body">
+      </app-note-card>
     </div>
+
+    <button class="button floating-add-button is-primary" routerLink="new">+ Add</button>
 </div>
