@@ -3,7 +3,7 @@
     <div class="search-bar-container">
         <div class="field">
             <p class="control has-icons-left has-icons-right">
-              <input style="background-color: rgb(246, 243, 243);" 
+              <input #filterInput style="background-color: rgb(246, 243, 243);" 
               class="input" (keyup)="filter($any($event.target).value)" type="text" placeholder="Filter">
               <span class="icon is-small is-left">
                 <img style="padding: 12px;" src="../../../assets/icons8-search.svg">
@@ -15,10 +15,10 @@
     <div class="notes-list" [@listAnim]>
       <!--<app-note-card [title]="'cardTitle'" [body]="'bodyText bodyText bodyText'"></app-note-card>-->
       <app-note-card 
-        *ngFor="let note of filteredNotes; index as i"
-        [link]="i.toString()"
+        *ngFor="let note of filteredNotes"
+        [link]="generateNoteUrl(note).toString()"
         [@itemAnim]
-        (delete)="deleteNote(i)"
+        (delete)="deleteNote(note)"
         [title]="note.title" 
         [body]="note.body">
       </app-note-card>

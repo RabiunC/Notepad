@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Note } from 'src/app/shared/note.model';
 import { NotesService } from 'src/app/shared/notes.service';
 
@@ -39,7 +39,7 @@ import { NotesService } from 'src/app/shared/notes.service';
           transform: 'scale(1)',
           opacity: 0.75
         })),
-        animate('80ms ease-out', style({
+        animate('120ms ease-out', style({
           transform: 'scale(0.68)',
           opacity: 0
         })),
@@ -77,16 +77,25 @@ export class NotesListComponent implements OnInit {
   //cardTitle: string = 'abc';
   notes: Note[] = new Array<Note>();
   filteredNotes: Note[] = new Array<Note>();
+  @ViewChild('filterInput') filterInputElRef: ElementRef<HTMLInputElement>;
 
   constructor(private notesService: NotesService) { }
 
   ngOnInit(): void {
     this.notes = this.notesService.getAll();
-    this.filteredNotes = this.notes;
+    //this.filteredNotes = this.notesService.getAll();
+    this.filter('');
   }
 
-  deleteNote(id: number) {
-    this.notesService.delete(id);
+  deleteNote(note: Note) {
+    let noteId = this.notesService.getId(note);
+    this.notesService.delete(noteId);
+    this.filter(this.filterInputElRef.nativeElement.value);
+  }
+
+  generateNoteUrl(note: Note){
+    let noteId = this.notesService.getId(note);
+    return noteId;
   }
 
   filter(query:string) {
@@ -104,6 +113,8 @@ export class NotesListComponent implements OnInit {
     });
     let uniqueResults = this.removeDuplicates(allResults);
     this.filteredNotes = uniqueResults;
+
+    this.sortByRelevancy(allResults);
   }
 
   removeDuplicates(arr: Array<any>) {
@@ -114,7 +125,7 @@ export class NotesListComponent implements OnInit {
     return Array.from(uniqueResults);
   }
 
-  relevantNotes(query: string) {
+  relevantNotes(query: string): Array<Note> {
     query = query.toLowerCase().trim();
     let relevantNotes = this.notes.filter(note => {
         if(note.title && note.title.toLowerCase().includes(query)){
@@ -127,5 +138,30 @@ export class NotesListComponent implements OnInit {
         })    
       return relevantNotes;
     }
+
+  sortByRelevancy(searchResults: Note[]){
+    let noteCountObj: Object = {};
+    searchResults.forEach( note => {
+      let noteId = this.notesService.getId(note);
+
+      if(noteCountObj[noteId]){
+        noteCountObj[noteId] += 1;
+      }
+      else{
+        noteCountObj[noteId] = 1;
+      }
+    })
+
+    this.filteredNotes = this.filteredNotes.sort((a: Note, b: Note) => {
+
+      let aId = this.notesService.getId(a);
+      let bId = this.notesService.getId(b);
+
+      let aCount = noteCountObj[aId];
+      let bCount = noteCountObj[bId];
+
+      return bCount - aCount;
+    })
+  }
 
 }
