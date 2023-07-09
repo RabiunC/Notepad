@@ -164,4 +164,23 @@ export class NotesListComponent implements OnInit {
     })
   }
 
+  /*....................Debouncing Angular Search field..................................................................
+  import {fromEvent } from 'rxjs';
+  import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators'
+
+   ngAfterViewInit() {
+            // server-side search
+        fromEvent(this.filterInputElRef.nativeElement,'keyup')
+            .pipe(
+                filter(Boolean),  //To make sure that the the search function does not get called at when the field is empty
+                debounceTime(150), 
+                distinctUntilChanged(),
+                tap((text) => {
+                  console.log(this.filterInputElRef.nativeElement.value)
+                })
+            )
+            .subscribe();
+  }
+  */
+
 }
